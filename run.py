@@ -1,10 +1,5 @@
-from langchain_ollama import ChatOllama
+from app.rag.loader import load_gita_documents
 
-llm = ChatOllama(
-    model="mistral",
-    base_url="http://127.0.0.1:11434",
-    temperature=0
-)
-
-response = llm.invoke("Explain RAG in one line")
-print(response.content)
+docs = load_gita_documents()
+print(len(docs))
+print(docs[0])
