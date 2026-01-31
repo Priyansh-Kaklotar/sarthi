@@ -1,8 +1,8 @@
 from typing import List
-
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
+MAX_COMMENTARY_CHARS =600
 
 def split_documents(documents : List[Document])-> List[Document] :
     """
@@ -21,9 +21,9 @@ def split_documents(documents : List[Document])-> List[Document] :
     split_docs : List[Document] = []
 
     commentary_splitter = RecursiveCharacterTextSplitter(
-        chunk_size = 700,
-        chunk_overlap=100,
-        separators=["\n\n" , "\n" , "|" , "."]
+        chunk_size = MAX_COMMENTARY_CHARS,
+        chunk_overlap=80,
+        separators=["\n\n" , "\n" ,"।", "|" , "."]
     )
 
     for doc in documents:
@@ -31,15 +31,32 @@ def split_documents(documents : List[Document])-> List[Document] :
         if doc.metadata.get("type") in ["sanskrit" , "translation" , "word_meaning"]:
             split_docs.append(doc)
             continue
-        else :
-            chunks = commentary_splitter.split_text(doc.page_content)
+        if doc.metadata.get("type") == "commentary" :
+            text = doc.page_content.strip()
 
-            for idx , chunk in enumerate(chunks):
+            if len(text) <= MAX_COMMENTARY_CHARS:
                 split_docs.append(
                     Document(
-                        page_content=chunk.strip(),
-                        metadata={**doc.metadata , "chunk_index" : idx}
+                        page_content=text,
+                        metadata = {
+                            **doc.metadata,
+                            "chunk_index": 0,
+                            "chunk_total": 1
+                        }
                     )
                 )
+            else :
+                chunks = commentary_splitter.split_text(text=text)
+                for idx , chunk in enumerate(chunks):
+                    split_docs.append(
+                        Document(
+                            page_content=chunk.strip(),
+                            metadata ={
+                                **doc.metadata,
+                                "chunk_index": idx,
+                                "chunk_total": len(chunks)
+                            }
+                        )
+                    )
     
     return split_docs

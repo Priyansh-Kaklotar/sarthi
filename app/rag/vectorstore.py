@@ -1,4 +1,4 @@
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from app.rag.embeddings import get_embedding_model
 from app.config import CHROMA_PATH
 import os, shutil
