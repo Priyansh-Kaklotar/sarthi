@@ -1,6 +1,8 @@
-from typing import List, TypedDict
+from typing import List, Optional, TypedDict
+from langchain_core.documents import Document
+
 
 class SarthiState(TypedDict):
     question: str
-    retrieved_shlokas: List[str]
-    answer: str
+    documents: List[Document]
+    answer: Optional[str]

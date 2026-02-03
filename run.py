@@ -1,8 +1,13 @@
-from app.rag.loader import load_gita_documents
-from app.rag.splitter import split_documents
+from app.agent.state import SarthiState
+from app.agent.nodes import retrive_node , answer_node
 
-docs = load_gita_documents()
-split_docs = split_documents(docs)
+state = SarthiState(
+    question="What is life?",
+    documents=[],
+    answer=None
+)
 
-print(len(docs), "→", len(split_docs))
-print(split_docs[0])
+state = retrive_node(state)
+state = answer_node(state)
+
+print(state["answer"])
